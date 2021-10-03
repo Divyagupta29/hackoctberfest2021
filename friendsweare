@@ -1,0 +1,132 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node {
+    struct node *left;
+    int info;
+    struct node *right;
+};
+
+struct node *newNode(int data){
+    struct node *temp = (struct node *)malloc(sizeof(struct node ));
+    temp->info = data;
+    temp->left = NULL;
+    temp->right = NULL;
+
+    return temp;
+}
+
+struct node *createTree(){
+    int data;
+    char ch;
+
+    printf("\n Enter data : ");
+    scanf("%d",&data);
+
+    struct node *root = newNode(data);
+
+    fflush(stdin);
+
+    printf("\n do you want to enter left child of %d ",data);
+    scanf("%c",&ch);
+
+    if(ch=='Y'||ch=='y')
+      root->left = createTree();
+    else
+      root->left = NULL;
+    
+    fflush(stdin);
+
+     printf("\n do you want to enter right child of %d ",data);
+    scanf("%c",&ch);
+
+    if(ch=='Y'||ch=='y')
+      root->right = createTree();
+    else
+      root->right = NULL;
+
+    return root;
+}
+
+int front = -1;
+int back = -1;
+
+void enqueue(struct node q[],struct node *ptr,int size){
+    front++;
+    if(front==size)
+    {
+        printf(" \n the queue is full ");
+    }
+    else
+    {
+        q[front] = *ptr;
+    }
+}
+
+struct node *dequeue(struct node q[],int size){
+    if(back==front)
+      {
+          printf("\n queue is empty ");
+          return NULL;
+      }
+      else
+      {
+          back++;
+          struct node *temp = (struct node *)malloc(sizeof(struct node ));
+          *temp = q[back];
+          return temp; 
+      }
+}
+
+int isEmpty(int size){
+    if(front==back || front==size)
+         return 1;
+    else
+        return 0;
+}
+
+int maxSumofLevel(struct node *root,int size,int max){
+
+    struct node *Queue = (struct node *)malloc(sizeof(struct node *));
+    int count=0;
+
+    enqueue(Queue,root,size);
+    max = root->info;
+
+    while(!isEmpty(size)){
+        count = 0;
+        struct node *temp = (struct node *)malloc(sizeof(struct node ));
+        temp = dequeue(Queue,size);
+
+        if(temp->left!=NULL){
+            count += temp->left->info;
+           enqueue(Queue,temp->left,size);
+        }
+        if(temp->right!=NULL){
+           enqueue(Queue,temp->right,size);
+           count += temp->right->info;
+        }
+
+        if(count > max )
+          max = count ;
+        
+    }
+    
+    return max;
+
+}
+
+int main(){
+    struct node *root = (struct node *)malloc(sizeof(struct node ));
+
+    root = createTree();
+    int size;
+    printf("\n enter total no. of nodes ");
+    scanf("%d",&size);
+
+
+    int max = 0;
+    printf(" \n maximum sum of any level in BT is %d ", maxSumofLevel(root,size,max));
+
+    return 0;
+}
